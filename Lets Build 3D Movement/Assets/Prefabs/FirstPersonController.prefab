@@ -1055,7 +1055,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &85694864827592239
 Transform:
   m_ObjectHideFlags: 0
@@ -1139,9 +1139,12 @@ MonoBehaviour:
   runAcceleration: 50
   runSpeed: 5
   drag: 30
+  movingThreshhold: 0.01
   LookSensH: 1
   LookSensV: 1
   LookLimitV: 80
+  gravity: 9.81
+  jumpHeight: 1
 --- !u!114 &4796783607843758045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1166,7 +1169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 420ecd32a073c2b45a445131465eb84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerState
-  <Movement>k__BackingField: 0
+  <CurrentPlayerMovementState>k__BackingField: 0
 --- !u!114 &-8430564984276849753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1179,7 +1182,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f816e9792c55542aeb24fbcde1c542, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
-  _animator: {fileID: 0}
+  _animator: {fileID: 4941507700125886409}
+  _characterController: {fileID: 2335201711659519953}
+  locomotionBlentSpeed: 0.1
 --- !u!1 &962933053029507108
 GameObject:
   m_ObjectHideFlags: 0
@@ -2113,7 +2118,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.5
   far clip plane: 1000
   field of view: 60
   orthographic: 0

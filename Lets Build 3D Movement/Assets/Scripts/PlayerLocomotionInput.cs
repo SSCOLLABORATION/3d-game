@@ -4,18 +4,14 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(-2)]
 public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomotionMapActions
 {
-    
     public PlayerControls PlayerControls { get; private set; }
     public Vector2 MovementInput { get; private set; }
     public Vector2 LookInput { get; private set; }
+    
+    // Jump input state store karne ke liye nayi property
+    public bool JumpInput { get; private set; } 
 
-
-    public void OnJump(InputAction.CallbackContext context)
-    {
-        throw new System.NotImplementedException();
-    }
-
-     private void OnEnable()
+    private void OnEnable()
     {
         PlayerControls = new PlayerControls();
         PlayerControls.Enable();
@@ -24,7 +20,6 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
         PlayerControls.PlayerLocomotionMap.SetCallbacks(this);
     }
 
-
     private void OnDisable()
     {
         PlayerControls.Disable();
@@ -32,11 +27,12 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
         PlayerControls.PlayerLocomotionMap.RemoveCallbacks(this);
         //properly disables the input actions and removes the callbacks when the script is disabled, preventing any potential issues with input handling.
     }
+
     public void OnMovement(InputAction.CallbackContext context)
     {
         MovementInput = context.ReadValue<Vector2>();
         //set movement input to vector 2 output of the input action, which is a 2D vector representing the direction and magnitude of the player's movement input.
-        print(MovementInput);
+        // print(MovementInput); // Commented out to avoid console spam, enable if needed for debugging
     }
 
     public void OnLook(InputAction.CallbackContext context)
@@ -44,9 +40,11 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
         LookInput = context.ReadValue<Vector2>();
         //set look input to vector 2 output of the input action, which is a 2D vector representing the direction and magnitude of the player's look input.
     }
-    //getter and setter method makes PlayerControls  class property instead of a field
-    //why?   To acces/get this variable from outside of the class but dont want anybody to change vriable from outside the class.
-    //private set; means that the variable can only be set from within the class, but can be accessed from outside the class.
 
-
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        // Exception hata kar button ki boolean state read kar rahe hain
+        // Jab button press hoga toh true hoga, release hone par false ho jayega
+        JumpInput = context.ReadValueAsButton();
+    }
 }

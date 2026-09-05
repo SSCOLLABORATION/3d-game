@@ -5016,9 +5016,12 @@ MonoBehaviour:
   runAcceleration: 50
   runSpeed: 5
   drag: 30
+  movingThreshhold: 0.01
   LookSensH: 1
   LookSensV: 1
   LookLimitV: 80
+  gravity: 9.81
+  jumpHeight: 2
 --- !u!114 &1434437128470026279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5044,6 +5047,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
   _animator: {fileID: 159471096999177518}
+  _characterController: {fileID: 2374656840239463641}
+  locomotionBlentSpeed: 4
 --- !u!114 &8650504857223571626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5056,7 +5061,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 420ecd32a073c2b45a445131465eb84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerState
-  <Movement>k__BackingField: 0
+  <CurrentPlayerMovementState>k__BackingField: 0
 --- !u!1 &6523338700529081702
 GameObject:
   m_ObjectHideFlags: 0
