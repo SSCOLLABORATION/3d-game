@@ -1,9 +1,12 @@
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(-1)]
+[DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
 public class PlayerController : MonoBehaviour
 {
+    
     [Header("Component References")]
     //this is the main player controller script that handles the player's movement and input. It uses the PlayerLocomotionInput script to get the player's input and then applies that input to move the player character in the game world.
     [SerializeField] private CharacterController _characterController;
@@ -15,6 +18,9 @@ public class PlayerController : MonoBehaviour
     public float runAcceleration = 10f;
     public float runSpeed = 5f;
     public float drag = 0.1f;
+    public float movingThreshhold = 0.01f;
+
+
     [Header("Look Settings")]
     public float LookSensH= 1f;
     public float LookSensV= 1f;
@@ -22,17 +28,38 @@ public class PlayerController : MonoBehaviour
     
 
     private PlayerLocomotionInput _playerLocomotionInput;
+    private PlayerState _playerState;
     private Vector2 _cameraRotation= Vector2.zero;
     private Vector2 _playerTargetRotation= Vector2.zero;
+    
 
     private void Awake()
     {
         _playerLocomotionInput = GetComponent<PlayerLocomotionInput>();
         //get the PlayerLocomotionInput component attached to the player game object and store it in the _playerLocomotionInput variable for later use.
+        _playerState = GetComponent<PlayerState>();
+        //get the PlayerState component attached to the player game object and store it in the _
+
     }
 
 
     private void Update()
+    {
+        UpdateMovementState();
+        HandleLateralMovement();
+        
+    }
+
+    private void UpdateMovementState()
+    {
+        bool isMovementInput = _playerLocomotionInput.MovementInput != Vector2.zero;
+        bool isMovingLaterally = IsMovingLaterally();
+
+        PlayerMovementState lateralState = isMovingLaterally || isMovementInput ? PlayerMovementState.Running : PlayerMovementState.Idling;
+        _playerState.SetPlayerMovementState(lateralState);
+    }
+
+    private void HandleLateralMovement()
     {
         Vector3 cameraforwardXZ = new Vector3(_playerCamera.transform.forward.x, 0f, _playerCamera.transform.forward.z).normalized;
         Vector3 cameraRightXZ = new Vector3(_playerCamera.transform.right.x, 0f, _playerCamera.transform.right.z).normalized;
@@ -55,7 +82,6 @@ public class PlayerController : MonoBehaviour
         //clamp the new velocity to the maximum run speed, preventing the player from moving faster
         _characterController.Move(newVelocity * Time.deltaTime);
         //unity suggests calling it only once per frame, and it should be called in the Update() method to ensure that the character's movement is updated every frame based on the player's input and the current velocity of the character controller.
-        
     }
 
     private void LateUpdate()
@@ -69,10 +95,16 @@ public class PlayerController : MonoBehaviour
         _playerCamera.transform.localRotation = Quaternion.Euler(-_cameraRotation.y, _cameraRotation.x, 0f); 
     }
 
+    private bool IsMovingLaterally()
+    {
+        Vector3 lateralVelocity = new Vector3(_characterController.velocity.x,0f, _characterController.velocity.z);
+        return lateralVelocity.magnitude > movingThreshhold;  
+    }
 
-
-
-    
+    private string GetDebuggerDisplay()
+    {
+        return ToString();
+    }
 }
 
 
