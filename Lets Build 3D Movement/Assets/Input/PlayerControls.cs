@@ -121,6 +121,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": true,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""SprintToggle"",
+                    ""type"": ""Button"",
+                    ""id"": ""97bfbca7-78e6-4c19-ac30-5d43db038998"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -200,6 +210,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""94a96308-9bc3-491b-b634-e9d6642caaf4"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SprintToggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -211,6 +232,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerLocomotionMap_Movement = m_PlayerLocomotionMap.FindAction("Movement", throwIfNotFound: true);
         m_PlayerLocomotionMap_Jump = m_PlayerLocomotionMap.FindAction("Jump", throwIfNotFound: true);
         m_PlayerLocomotionMap_Look = m_PlayerLocomotionMap.FindAction("Look", throwIfNotFound: true);
+        m_PlayerLocomotionMap_SprintToggle = m_PlayerLocomotionMap.FindAction("SprintToggle", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -294,6 +316,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerLocomotionMap_Movement;
     private readonly InputAction m_PlayerLocomotionMap_Jump;
     private readonly InputAction m_PlayerLocomotionMap_Look;
+    private readonly InputAction m_PlayerLocomotionMap_SprintToggle;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerLocomotionMap".
     /// </summary>
@@ -317,6 +340,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerLocomotionMap/Look".
         /// </summary>
         public InputAction @Look => m_Wrapper.m_PlayerLocomotionMap_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerLocomotionMap/SprintToggle".
+        /// </summary>
+        public InputAction @SprintToggle => m_Wrapper.m_PlayerLocomotionMap_SprintToggle;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -352,6 +379,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @SprintToggle.started += instance.OnSprintToggle;
+            @SprintToggle.performed += instance.OnSprintToggle;
+            @SprintToggle.canceled += instance.OnSprintToggle;
         }
 
         /// <summary>
@@ -372,6 +402,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @SprintToggle.started -= instance.OnSprintToggle;
+            @SprintToggle.performed -= instance.OnSprintToggle;
+            @SprintToggle.canceled -= instance.OnSprintToggle;
         }
 
         /// <summary>
@@ -433,5 +466,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SprintToggle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSprintToggle(InputAction.CallbackContext context);
     }
 }

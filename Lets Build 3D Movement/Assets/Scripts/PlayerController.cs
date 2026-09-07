@@ -13,8 +13,25 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     public float runAcceleration = 10f;
     public float runSpeed = 5f;
+
+    public float sprintAcceleration = 20f; 
+    public float sprintSpeed = 10f;
+
+    public float crouchAcceleration = 5f;
+    public float crouchSpeed = 2.5f;
+
+    [Header("Crouch Height Settings")]
+    public float standingHeight = 2f;
+    public float crouchHeight = 1f;
+
+    [Header("Drag & Threshold Settings")]
     public float drag = 0.1f;
     public float movingThreshhold = 0.01f;
+
+
+
+    
+    
 
     [Header("Look Settings")]
     public float LookSensH = 1f;
@@ -39,7 +56,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+         // Hide the cursor
+    Cursor.visible = false;
+    // Lock the cursor to the center of the screen
+    Cursor.lockState = CursorLockMode.Locked;
         UpdateMovementState();
+        HandleCrouchHeight(); // Naya function call
         
         // Dono movements (X,Z aur Y) ko alag alag calculate kar rahe hain
         Vector3 finalVelocity = HandleLateralMovement();
@@ -49,23 +71,55 @@ public class PlayerController : MonoBehaviour
         _characterController.Move(finalVelocity * Time.deltaTime);
     }
 
-    private void UpdateMovementState()
+    private void HandleCrouchHeight()
+    {
+        // CharacterController ki height adjust karein taaki collision chota ho jaye
+        if (_playerLocomotionInput.CrouchInput)
+        {
+            _characterController.height = crouchHeight;
+            _characterController.center = new Vector3(0, crouchHeight / 2f, 0);
+        }
+        else
+        {
+            _characterController.height = standingHeight;
+            _characterController.center = new Vector3(0, standingHeight / 2f, 0);
+        }
+    }
+
+
+   private void UpdateMovementState()
     {
         bool isMovementInput = _playerLocomotionInput.MovementInput != Vector2.zero;
         bool isMovingLaterally = IsMovingLaterally();
+        bool isSprinting = _playerLocomotionInput.SprintInput && isMovingLaterally;
 
-        // Note: Yahan aap Jumping/Falling state bhi add kar sakte hain future mein
-        PlayerMovementState lateralState = isMovingLaterally || isMovementInput ? PlayerMovementState.Running : PlayerMovementState.Idling;
+        // Player state ko update karein taaki animations ko pata chale ki hum sprint kar rahe hain
+        PlayerMovementState lateralState = isMovementInput || isMovingLaterally 
+            ? (isSprinting ? PlayerMovementState.Sprinting : PlayerMovementState.Running) 
+            : PlayerMovementState.Idling;
+            
         _playerState.SetPlayerMovementState(lateralState);
     }
 
     private Vector3 HandleLateralMovement()
     {
+        // Sprinting check kar ke current speed aur acceleration decide karein
+        bool isSprinting = _playerLocomotionInput.SprintInput;
+        bool isCrouching = _playerLocomotionInput.CrouchInput;
+
+
+        
+
+        // Crouch override karega sprint ko (crouch karte waqt bhag nahi sakte)
+        float currentSpeed = isCrouching ? crouchSpeed : (isSprinting ? sprintSpeed : runSpeed);
+        float currentAcceleration = isCrouching ? crouchAcceleration : (isSprinting ? sprintAcceleration : runAcceleration);
+
+
         Vector3 cameraforwardXZ = new Vector3(_playerCamera.transform.forward.x, 0f, _playerCamera.transform.forward.z).normalized;
         Vector3 cameraRightXZ = new Vector3(_playerCamera.transform.right.x, 0f, _playerCamera.transform.right.z).normalized;
-        
         Vector3 movementDirection = cameraRightXZ * _playerLocomotionInput.MovementInput.x + cameraforwardXZ * _playerLocomotionInput.MovementInput.y;
-        Vector3 movementDelta = movementDirection * runAcceleration * Time.deltaTime;
+       // runAcceleration ki jagah currentAcceleration use karein
+        Vector3 movementDelta = movementDirection * currentAcceleration * Time.deltaTime;
 
         // characterController.velocity lateral math ke liye theek hai
         Vector3 currentLateralVelocity = new Vector3(_characterController.velocity.x, 0f, _characterController.velocity.z);
@@ -75,7 +129,8 @@ public class PlayerController : MonoBehaviour
         
         newVelocity = (newVelocity.magnitude > drag * Time.deltaTime) ? newVelocity - currentDrag : Vector3.zero;
         
-        newVelocity = Vector3.ClampMagnitude(newVelocity, runSpeed);
+       // runSpeed ki jagah currentSpeed se clamp karein
+        newVelocity = Vector3.ClampMagnitude(newVelocity, currentSpeed);
         
         return newVelocity; // Return kar rahe hain Move call karne ki jagah
     }

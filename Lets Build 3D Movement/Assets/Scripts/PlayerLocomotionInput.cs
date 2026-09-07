@@ -7,9 +7,12 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
     public PlayerControls PlayerControls { get; private set; }
     public Vector2 MovementInput { get; private set; }
     public Vector2 LookInput { get; private set; }
+    public bool SprintInput { get; private set; }
     
     // Jump input state store karne ke liye nayi property
     public bool JumpInput { get; private set; } 
+
+    public bool CrouchInput { get; private set; }
 
     private void OnEnable()
     {
@@ -46,5 +49,20 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
         // Exception hata kar button ki boolean state read kar rahe hain
         // Jab button press hoga toh true hoga, release hone par false ho jayega
         JumpInput = context.ReadValueAsButton();
+    }
+
+    public void OnSprintToggle(InputAction.CallbackContext context)
+    {
+        // Jab shift press hoga tab true, release par false
+        SprintInput = context.ReadValueAsButton();
+    }
+
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
+        // Button hold karne par crouch, chhodne par stand (Hold-to-crouch)
+        CrouchInput = context.ReadValueAsButton();
+        
+        // Agar aapko Toggle (ek baar dabane par crouch) chahiye, toh ye use karein:
+        // if (context.performed) CrouchInput = !CrouchInput;
     }
 }

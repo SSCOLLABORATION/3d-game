@@ -1055,7 +1055,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &85694864827592239
 Transform:
   m_ObjectHideFlags: 0
@@ -1138,6 +1138,12 @@ MonoBehaviour:
   _playerCamera: {fileID: 3675864570190323033}
   runAcceleration: 50
   runSpeed: 5
+  sprintAcceleration: 60
+  sprintSpeed: 10
+  crouchAcceleration: 5
+  crouchSpeed: 2.5
+  standingHeight: 2
+  crouchHeight: 1
   drag: 30
   movingThreshhold: 0.01
   LookSensH: 1
