@@ -4,10 +4,13 @@ public class PlayerAnimation : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
     [SerializeField] private CharacterController _characterController; // CharacterController reference add kiya
+
+    [SerializeField] private PlayerState _playerState;
+
     [SerializeField] private float locomotionBlentSpeed = 10f; // Note: Isko thoda bada rakhein warna blend bohot slow hoga
     
     private PlayerLocomotionInput _playerLocomotionInput;
-
+    
     private static int isCrouchingHash = Animator.StringToHash("IsCrouching");
 
     private static int inputXHash = Animator.StringToHash("InputX");
@@ -18,6 +21,8 @@ public class PlayerAnimation : MonoBehaviour
     // Jump ke liye naye Animator parameters ke hashes
     private static int isGroundedHash = Animator.StringToHash("IsGrounded");
     private static int verticalVelocityHash = Animator.StringToHash("VerticalVelocity");
+    private static int isZipliningHash = Animator.StringToHash("IsZiplining");
+
 
     private Vector3 _currentBlendInput = Vector3.zero;
     private float _currentMagnitude = 0f;
@@ -26,7 +31,9 @@ public class PlayerAnimation : MonoBehaviour
     {
         _playerLocomotionInput = GetComponent<PlayerLocomotionInput>();
         
-        // Agar inspector mein assign karna bhool gaye toh auto-fetch kar lega
+        // Is line ko delete ya comment kar dein:
+        // _playerState = GetComponent<PlayerState>(); 
+        
         if (_characterController == null) 
         {
             _characterController = GetComponent<CharacterController>();
@@ -64,6 +71,10 @@ public class PlayerAnimation : MonoBehaviour
 
         // FIX 3: Animator ko naya magnitude parameter bheja
         _animator.SetFloat(inputMagnitudeHash, _currentMagnitude);
+
+
+        bool isZiplining = _playerState.CurrentPlayerMovementState == PlayerMovementState.Ziplining;
+        _animator.SetBool(isZipliningHash, isZiplining);
 
         // JUMP ANIMATION LOGIC:
         // Animator ko zameen ka status aur vertical speed bhej rahe hain

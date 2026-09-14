@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Component References")]
     [SerializeField] private CharacterController _characterController;
-    [SerializeField] private Camera _playerCamera;
+    [SerializeField] private Transform _cameraTarget;
 
     [Header("Movement Settings")]
     public float runAcceleration = 10f;
@@ -19,6 +19,11 @@ public class PlayerController : MonoBehaviour
 
     public float crouchAcceleration = 5f;
     public float crouchSpeed = 2.5f;
+
+[Header("Zipline Settings")]
+public float ziplineYOffset = -2f; // Ye value player ko wire se niche shift karegi
+private bool _isZiplining = false;
+private Zipline _currentZipline;
 
     [Header("Crouch Height Settings")]
     public float standingHeight = 2f;
@@ -55,21 +60,26 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Update()
-    {
-         // Hide the cursor
+{
     Cursor.visible = false;
-    // Lock the cursor to the center of the screen
     Cursor.lockState = CursorLockMode.Locked;
+
+    if (_isZiplining && _currentZipline != null)
+    {
+        HandleZiplineMovement();
+    }
+    else
+    {
+        // Normal movement logic
         UpdateMovementState();
-        HandleCrouchHeight(); // Naya function call
+        HandleCrouchHeight();
         
-        // Dono movements (X,Z aur Y) ko alag alag calculate kar rahe hain
         Vector3 finalVelocity = HandleLateralMovement();
         finalVelocity.y = HandleVerticalMovement();
         
-        // CharacterController ko ek hi baar move karenge
         _characterController.Move(finalVelocity * Time.deltaTime);
     }
+}
 
     private void HandleCrouchHeight()
     {
@@ -115,8 +125,8 @@ public class PlayerController : MonoBehaviour
         float currentAcceleration = isCrouching ? crouchAcceleration : (isSprinting ? sprintAcceleration : runAcceleration);
 
 
-        Vector3 cameraforwardXZ = new Vector3(_playerCamera.transform.forward.x, 0f, _playerCamera.transform.forward.z).normalized;
-        Vector3 cameraRightXZ = new Vector3(_playerCamera.transform.right.x, 0f, _playerCamera.transform.right.z).normalized;
+        Vector3 cameraforwardXZ = new Vector3(_cameraTarget.forward.x, 0f, _cameraTarget.forward.z).normalized;
+Vector3 cameraRightXZ = new Vector3(_cameraTarget.right.x, 0f, _cameraTarget.right.z).normalized;
         Vector3 movementDirection = cameraRightXZ * _playerLocomotionInput.MovementInput.x + cameraforwardXZ * _playerLocomotionInput.MovementInput.y;
        // runAcceleration ki jagah currentAcceleration use karein
         Vector3 movementDelta = movementDirection * currentAcceleration * Time.deltaTime;
@@ -167,7 +177,7 @@ public class PlayerController : MonoBehaviour
         _cameraRotation.y = Mathf.Clamp(_cameraRotation.y + LookSensV * _playerLocomotionInput.LookInput.y, -LookLimitV, LookLimitV);
         
         transform.rotation = Quaternion.Euler(0f, _cameraRotation.x, 0f);
-        _playerCamera.transform.localRotation = Quaternion.Euler(-_cameraRotation.y, 0f, 0f); 
+        _cameraTarget.localRotation = Quaternion.Euler(-_cameraRotation.y, 0f, 0f);
     }
 
     private bool IsMovingLaterally()
@@ -179,5 +189,52 @@ public class PlayerController : MonoBehaviour
     private string GetDebuggerDisplay()
     {
         return ToString();
+    }
+
+private void HandleZiplineMovement()
+    {
+        _playerState.SetPlayerMovementState(PlayerMovementState.Ziplining);
+        
+        // Target (End Point) par offset lagayein taaki player hawa mein diagonal na ude
+        Vector3 targetPos = _currentZipline.endPoint.position;
+        targetPos.y += ziplineYOffset;
+
+        // Naye target ki taraf move karein
+        Vector3 direction = (targetPos - transform.position).normalized;
+        _characterController.Move(direction * _currentZipline.zipSpeed * Time.deltaTime);
+
+        // Distance bhi offset wale target se measure karein
+        float distance = Vector3.Distance(transform.position, targetPos);
+        
+        if (distance < 1f || _playerLocomotionInput.JumpInput) 
+        {
+            _isZiplining = false;
+            _currentZipline = null;
+            _verticalVelocity = 0f; // Hawa mein rukne se bachne ke liye gravity reset
+        }
+    }
+
+private void OnTriggerEnter(Collider other)
+    {
+        // Agar player zipline trigger zone mein aata hai
+        if (other.CompareTag("Zipline")) 
+        {
+            _currentZipline = other.GetComponent<Zipline>();
+            if (_currentZipline != null)
+            {
+                _isZiplining = true;
+
+                // Start point set karein aur offset lagayein
+                Vector3 startPos = _currentZipline.startPoint.position;
+                startPos.y += ziplineYOffset; // ziplineYOffset (-2f) ki wajah se player niche jayega
+
+                // CharacterController ko disable karke offset position par teleport karein
+                _characterController.enabled = false;
+                transform.position = startPos;
+                _characterController.enabled = true;
+                
+                // Note: Purani direct snap karne wali line yahan se hata di gayi hai taaki offset kaam kare.
+            }
+        }
     }
 }

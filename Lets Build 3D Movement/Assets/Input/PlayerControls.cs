@@ -131,6 +131,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Crouch"",
+                    ""type"": ""Button"",
+                    ""id"": ""d055df4e-0c66-48d5-bd3f-7cb180c85ffd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -221,6 +231,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""SprintToggle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3f5fa53c-cba9-4200-a0b1-cbde63d32456"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -233,6 +254,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerLocomotionMap_Jump = m_PlayerLocomotionMap.FindAction("Jump", throwIfNotFound: true);
         m_PlayerLocomotionMap_Look = m_PlayerLocomotionMap.FindAction("Look", throwIfNotFound: true);
         m_PlayerLocomotionMap_SprintToggle = m_PlayerLocomotionMap.FindAction("SprintToggle", throwIfNotFound: true);
+        m_PlayerLocomotionMap_Crouch = m_PlayerLocomotionMap.FindAction("Crouch", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -317,6 +339,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerLocomotionMap_Jump;
     private readonly InputAction m_PlayerLocomotionMap_Look;
     private readonly InputAction m_PlayerLocomotionMap_SprintToggle;
+    private readonly InputAction m_PlayerLocomotionMap_Crouch;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerLocomotionMap".
     /// </summary>
@@ -344,6 +367,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerLocomotionMap/SprintToggle".
         /// </summary>
         public InputAction @SprintToggle => m_Wrapper.m_PlayerLocomotionMap_SprintToggle;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerLocomotionMap/Crouch".
+        /// </summary>
+        public InputAction @Crouch => m_Wrapper.m_PlayerLocomotionMap_Crouch;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -382,6 +409,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @SprintToggle.started += instance.OnSprintToggle;
             @SprintToggle.performed += instance.OnSprintToggle;
             @SprintToggle.canceled += instance.OnSprintToggle;
+            @Crouch.started += instance.OnCrouch;
+            @Crouch.performed += instance.OnCrouch;
+            @Crouch.canceled += instance.OnCrouch;
         }
 
         /// <summary>
@@ -405,6 +435,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @SprintToggle.started -= instance.OnSprintToggle;
             @SprintToggle.performed -= instance.OnSprintToggle;
             @SprintToggle.canceled -= instance.OnSprintToggle;
+            @Crouch.started -= instance.OnCrouch;
+            @Crouch.performed -= instance.OnCrouch;
+            @Crouch.canceled -= instance.OnCrouch;
         }
 
         /// <summary>
@@ -473,5 +506,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSprintToggle(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Crouch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCrouch(InputAction.CallbackContext context);
     }
 }
