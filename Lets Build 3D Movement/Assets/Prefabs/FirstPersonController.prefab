@@ -1258,10 +1258,11 @@ MonoBehaviour:
   runSpeed: 5
   sprintAcceleration: 60
   sprintSpeed: 10
-  crouchAcceleration: 5
+  crouchAcceleration: 40
   crouchSpeed: 2.5
+  ziplineYOffset: -2.5
   standingHeight: 2
-  crouchHeight: 1
+  crouchHeight: 1.2
   drag: 30
   movingThreshhold: 0.01
   LookSensH: 1
@@ -1308,6 +1309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
   _animator: {fileID: 270727020556594631}
   _characterController: {fileID: 4371456659994702544}
+  _playerState: {fileID: 1566229624053390970}
   locomotionBlentSpeed: 4
 --- !u!1 &2109624016614835354
 GameObject:

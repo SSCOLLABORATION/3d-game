@@ -141,6 +141,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Dashing"",
+                    ""type"": ""Button"",
+                    ""id"": ""63134d83-1981-446a-bbc1-3d0a8467c489"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -242,6 +252,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bc2b68e1-49f8-443b-b8be-a18cb52520c7"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dashing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -255,6 +276,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerLocomotionMap_Look = m_PlayerLocomotionMap.FindAction("Look", throwIfNotFound: true);
         m_PlayerLocomotionMap_SprintToggle = m_PlayerLocomotionMap.FindAction("SprintToggle", throwIfNotFound: true);
         m_PlayerLocomotionMap_Crouch = m_PlayerLocomotionMap.FindAction("Crouch", throwIfNotFound: true);
+        m_PlayerLocomotionMap_Dashing = m_PlayerLocomotionMap.FindAction("Dashing", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -340,6 +362,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerLocomotionMap_Look;
     private readonly InputAction m_PlayerLocomotionMap_SprintToggle;
     private readonly InputAction m_PlayerLocomotionMap_Crouch;
+    private readonly InputAction m_PlayerLocomotionMap_Dashing;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerLocomotionMap".
     /// </summary>
@@ -371,6 +394,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerLocomotionMap/Crouch".
         /// </summary>
         public InputAction @Crouch => m_Wrapper.m_PlayerLocomotionMap_Crouch;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerLocomotionMap/Dashing".
+        /// </summary>
+        public InputAction @Dashing => m_Wrapper.m_PlayerLocomotionMap_Dashing;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -412,6 +439,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Crouch.started += instance.OnCrouch;
             @Crouch.performed += instance.OnCrouch;
             @Crouch.canceled += instance.OnCrouch;
+            @Dashing.started += instance.OnDashing;
+            @Dashing.performed += instance.OnDashing;
+            @Dashing.canceled += instance.OnDashing;
         }
 
         /// <summary>
@@ -438,6 +468,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Crouch.started -= instance.OnCrouch;
             @Crouch.performed -= instance.OnCrouch;
             @Crouch.canceled -= instance.OnCrouch;
+            @Dashing.started -= instance.OnDashing;
+            @Dashing.performed -= instance.OnDashing;
+            @Dashing.canceled -= instance.OnDashing;
         }
 
         /// <summary>
@@ -513,5 +546,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCrouch(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Dashing" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDashing(InputAction.CallbackContext context);
     }
 }

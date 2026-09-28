@@ -14,6 +14,8 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
 
     public bool CrouchInput { get; private set; }
 
+    public bool DashInput {get;private set; }
+
     private void OnEnable()
     {
         PlayerControls = new PlayerControls();
@@ -64,5 +66,10 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
         
         // Agar aapko Toggle (ek baar dabane par crouch) chahiye, toh ye use karein:
         // if (context.performed) CrouchInput = !CrouchInput;
+    }
+
+    public void OnDashing(InputAction.CallbackContext context)
+    {
+        DashInput = context.ReadValueAsButton();
     }
 }

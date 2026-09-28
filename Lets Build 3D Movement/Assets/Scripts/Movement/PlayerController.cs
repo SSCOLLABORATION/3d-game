@@ -34,7 +34,15 @@ private Zipline _currentZipline;
     public float movingThreshhold = 0.01f;
 
 
+[Header("Dash Settings")]
+    public float dashSpeed = 25f; // Dash ki raftaar
+    public float dashDuration = 0.2f; // Kitne time tak dash chalega (seconds)
+    public float dashCooldown = 1f; // Ek dash ke baad dusre dash ka wait time
 
+    private bool _isDashing = false;
+    private float _dashTimer = 0f;
+    private float _lastDashTime = -100f; // Pehle dash ko allow karne ke liye negative value
+    private Vector3 _dashDirection;
     
     
 
@@ -64,10 +72,21 @@ private Zipline _currentZipline;
     Cursor.visible = false;
     Cursor.lockState = CursorLockMode.Locked;
 
+
+    // Dash Trigger Check (Cooldown aur current state check kar raha hai)
+        if (_playerLocomotionInput.DashInput && Time.time >= _lastDashTime + dashCooldown && !_isDashing && !_isZiplining)
+        {
+            StartDash();
+        }
+
     if (_isZiplining && _currentZipline != null)
     {
         HandleZiplineMovement();
     }
+    else if (_isDashing) // Agar dash ho raha hai, toh baki movement rok do
+        {
+            HandleDash();
+        }
     else
     {
         // Normal movement logic
@@ -80,6 +99,48 @@ private Zipline _currentZipline;
         _characterController.Move(finalVelocity * Time.deltaTime);
     }
 }
+
+
+        
+
+    private void StartDash()
+    {
+        _isDashing = true;
+        _dashTimer = 0f;
+        _lastDashTime = Time.time;
+        _playerState.SetPlayerMovementState(PlayerMovementState.Dashing);
+
+        // Direction calculate karein (jahan player move kar raha hai wahan dash karo)
+        Vector3 cameraforwardXZ = new Vector3(_cameraTarget.forward.x, 0f, _cameraTarget.forward.z).normalized;
+        Vector3 cameraRightXZ = new Vector3(_cameraTarget.right.x, 0f, _cameraTarget.right.z).normalized;
+        
+        _dashDirection = (cameraRightXZ * _playerLocomotionInput.MovementInput.x + cameraforwardXZ * _playerLocomotionInput.MovementInput.y).normalized;
+
+        // Agar player khada hai aur usne dash dabaya, toh seedha aage dash karao
+        if (_dashDirection == Vector3.zero)
+        {
+            _dashDirection = cameraforwardXZ;
+        }
+        
+        // Dash karte waqt gravity se free rakhne ke liye Y velocity zero kar dein (optional)
+        _verticalVelocity = 0f; 
+    }
+
+    private void HandleDash()
+    {
+        _dashTimer += Time.deltaTime;
+
+        // Agar dash ka time khatam ho gaya, toh dash rok do
+        if (_dashTimer >= dashDuration)
+        {
+            _isDashing = false;
+            return;
+        }
+
+        // Dash movement apply karein
+        Vector3 dashVelocity = _dashDirection * dashSpeed;
+        _characterController.Move(dashVelocity * Time.deltaTime);
+    }
 
     private void HandleCrouchHeight()
     {

@@ -21,5 +21,8 @@ public class PlayerState : MonoBehaviour
         Falling = 5,
         Strafing = 6,
 
-        Ziplining = 7 
+        Ziplining = 7,
+
+
+        Dashing = 8 
     }
